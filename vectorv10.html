@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Vector Hack V10 -- ABSOLUTE MASTER FILE</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root {
+  --bg-gradient: linear-gradient(180deg, #F2F2F7 0%, #E5E5EA 100%);
+  --accent-blue: #007AFF;
+  --ios-red: #FF3B30;
+  --ios-green: #34C759;
+  --glass: rgba(255, 255, 255, 0.94);
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+body { margin: 0; background: var(--bg-gradient); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #1D1D1F; overflow-x: hidden; }
+.app-wrapper { max-width: 500px; margin: 0 auto; padding: 20px; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* Cards & UI Elements */
+.card { background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); padding: 25px; border-radius: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); border: 1px solid rgba(255,255,255,0.7); margin-bottom: 20px; animation: slideUp 0.5s ease; }
+@keyframes slideUp { from {opacity:0; transform: translateY(20px);} to {opacity:1; transform: translateY(0);} }
+
+/* Input Styles - FULL UNTOUCHED */
+.input-group { position: relative; margin-bottom: 18px; }
+.input-group label { display: block; font-size: 11px; font-weight: 800; color: #888; margin-bottom: 8px; text-transform: uppercase; padding-left: 5px; letter-spacing: 0.5px; }
+.input-group i { position: absolute; left: 16px; top: 41px; color: var(--accent-blue); font-size: 18px; z-index: 10; }
+.input-group input, .input-group select { width: 100%; padding: 15px 15px 15px 50px; border-radius: 18px; border: 1.5px solid #D2D2D7; background: #fff; font-size: 16px; font-weight: 600; transition: 0.3s; appearance: none; }
+.input-group input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 4px rgba(0,122,255,0.1); }
+
+/* Button Styles - FULL UNTOUCHED */
+.btn { width: 100%; padding: 16px; border-radius: 18px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s, opacity 0.2s; }
+.btn:active { transform: scale(0.97); opacity: 0.9; }
+.btn-primary { background: var(--accent-blue); color: #fff; box-shadow: 0 8px 20px rgba(0,122,255,0.3); }
+.btn-secondary { background: #E5E5EA; color: #1D1D1F; }
+.btn-success { background: var(--ios-green); color: #fff; box-shadow: 0 8px 20px rgba(52,199,89,0.3); }
+.btn-danger { background: var(--ios-red); color: #fff; box-shadow: 0 8px 20px rgba(255,59,48,0.3); }
+.btn-black { background: #000; color: #fff; }
+
+/* Plan Section Styles */
+.plan-row { display: flex; justify-content: space-between; align-items: center; padding: 18px; background: #fff; border-radius: 20px; margin-bottom: 12px; border: 1px solid #E5E5EA; transition: 0.3s; }
+.plan-row:hover { border-color: var(--accent-blue); transform: translateY(-2px); }
+.plan-info h4 { margin: 0; font-size: 16px; font-weight: 800; color: #000; }
+.plan-info p { margin: 4px 0 0; font-size: 11px; color: #8E8E93; font-weight: 700; }
+.price-tag { font-weight: 900; color: var(--accent-blue); font-size: 18px; margin-right: 12px; }
+
+/* Modal Styles */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 20px; }
+.modal-content { background: #fff; border-radius: 35px; width: 100%; max-width: 420px; padding: 30px; animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes modalPop { from {transform: scale(0.8); opacity:0;} to {transform: scale(1); opacity:1;} }
+
+/* Performance Styles */
+.performance-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+.premium-stat-card { background: #fff; border-radius: 24px; padding: 20px; text-align: center; border: 1px solid #E5E5EA; }
+.win-rate-circle { position: relative; width: 85px; height: 85px; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; }
+.win-rate-circle svg { transform: rotate(-90deg); }
+.circle-bg { fill: none; stroke: #F2F2F7; stroke-width: 9; }
+.circle-progress { fill: none; stroke: var(--ios-green); stroke-width: 9; stroke-linecap: round; stroke-dasharray: 226; stroke-dashoffset: 226; transition: 1.5s cubic-bezier(0.4, 0, 0.2, 1); }
+.stat-number { position: absolute; font-size: 20px; font-weight: 900; }
+.trend-label { font-size: 10px; font-weight: 800; color: #8E8E93; text-transform: uppercase; letter-spacing: 1px; }
+
+.history-item { background: #fff; padding: 15px 20px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #F2F2F7; margin-bottom: 12px; transition: 0.3s; }
+.res-tag { font-size: 11px; font-weight: 900; padding: 5px 14px; border-radius: 12px; letter-spacing: 0.5px; }
+
+.hidden { display: none !important; }
+.badge-plan { padding: 8px 14px; border-radius: 12px; font-size: 11px; font-weight: 900; background: #000; color: #fff; letter-spacing: 0.5px; }
+
+/* Support & Copyright Branding */
+.footer-support { margin-top: 10px; text-align: center; padding: 15px 0; border-top: 1px solid rgba(0,0,0,0.05); }
+.copyright-text { font-size: 11px; font-weight: 700; color: #8E8E93; margin-top: 12px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* FORGOT PASSWORD POPUP STYLE */
+.forgot-popup-content { background: #fff; border-radius: 30px; width: 100%; max-width: 350px; padding: 25px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+</style>
+</head>
+<body>
+
+<div class="app-wrapper">
+  <div id="globalMsgBox" class="hidden" style="background:#FFF9C4; padding:18px; border-radius:20px; margin-bottom:20px; font-weight:700; border-left:6px solid #FBC02D; display:flex; align-items:center; gap:12px; color:#856404;">
+    <i class="fa-solid fa-bullhorn" style="font-size:20px;"></i> <span id="msgContent"></span>
+  </div>
+
+  <div id="loginScreen" class="card">
+    <div style="text-align:center; margin-bottom:30px;">
+      <img src="https://i.ibb.co/M5KpnNd2/logo.jpg" width="100" style="border-radius:25px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">
+      <h2 style="margin:15px 0 5px; font-weight:900; font-size:24px; letter-spacing:-0.5px;">Vector Hack V10</h2>
+      <p style="font-size:12px; color:#8E8E93; font-weight:700;">हिNDIE VLOGGER MASTER EDITION</p>
+    </div>
+    
+    <div id="tabBar" style="display:flex; background:rgba(0,0,0,0.06); padding:6px; border-radius:18px; margin-bottom:25px;">
+      <button class="btn" id="uTab" style="background:#fff; font-size:13px; padding:12px; border-radius:14px;" onclick="switchTab('user')"><i class="fa-solid fa-user"></i> USER</button>
+      <button class="btn" id="aTab" style="background:transparent; color:#888; font-size:13px; padding:12px; border-radius:14px;" onclick="switchTab('admin')"><i class="fa-solid fa-shield-halved"></i> ADMIN</button>
+    </div>
+    
+    <div id="loginFields">
+      <div class="input-group"><label>Mobile Number</label><i class="fa-solid fa-phone"></i><input type="text" id="uID" placeholder="91XXXXXXXX"></div>
+      <div class="input-group"><label>Account Password</label><i class="fa-solid fa-lock"></i><input type="password" id="uPass" placeholder="••••••••"></div>
+      
+      <div style="text-align: right; margin-top: -10px; margin-bottom: 20px;">
+          <span onclick="openForgotPopup()" style="font-size: 11px; color: #FF3B30; font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">
+              <i class="fa-solid fa-unlock-keyhole"></i> Forget Password?
+          </span>
+      </div>
+
+      <button class="btn btn-primary" onclick="login('user')">SIGN IN TO ACCOUNT</button>
+      <button class="btn btn-secondary" style="margin-top:12px;" onclick="toggleSignup(true)">CREATE NEW ACCOUNT</button>
+    </div>
+
+    <div id="signupFields" class="hidden">
+      <div class="input-group"><label>Full Name</label><i class="fa-solid fa-id-card"></i><input type="text" id="newName" placeholder="Enter Name"></div>
+      <div class="input-group"><label>Mobile Number</label><i class="fa-solid fa-mobile-screen"></i><input type="number" id="newMob" placeholder="Enter Mobile"></div>
+      <div class="input-group"><label>Set Password</label><i class="fa-solid fa-key"></i><input type="password" id="newPass" placeholder="Enter Password"></div>
+      <button class="btn btn-success" onclick="createAccount()">REGISTER NOW</button>
+      <button class="btn" style="background:none; color:#888;" onclick="toggleSignup(false)">BACK TO LOGIN</button>
+    </div>
+
+    <div id="adminFields" class="hidden">
+      <div class="input-group"><label>Master Admin ID</label><i class="fa-solid fa-user-shield"></i><input type="text" id="aID" placeholder="Admin Name"></div>
+      <div class="input-group"><label>Security Secret</label><i class="fa-solid fa-fingerprint"></i><input type="password" id="aPass" placeholder="••••••••"></div>
+      <button class="btn btn-black" onclick="login('admin')">AUTHORIZE ACCESS</button>
+    </div>
+
+    <div class="footer-support">
+      <button onclick="window.open('https://wa.me/message/6CJSZSPPROGGK1', '_blank')" class="btn btn-success"><i class="fa-brands fa-whatsapp"></i> CONTACT SUPPORT</button>
+      <div class="copyright-text">© 2026 हिNDIE VLOGGER MASTER</div>
+    </div>
+  </div>
+
+  <div id="forgotPopup" class="modal-overlay">
+    <div class="forgot-popup-content" style="animation: modalPop 0.3s ease;">
+      <div style="background:#FFF0F0; width:60px; height:60px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#FF3B30; font-size:24px; margin-bottom:15px;">
+        <i class="fa-solid fa-headset"></i>
+      </div>
+      <h3 style="margin:0; font-size:20px; font-weight:900;">Support Required</h3>
+      <p style="font-size:13px; color:#666; margin:15px 0 25px; line-height:1.5;">
+        Forgotten password karne ke liye aapko hamare <b style="color:#000;">Supports</b> se baat karna padega.
+      </p>
+      <button class="btn btn-success" onclick="redirectToSupport()">
+        <i class="fa-brands fa-whatsapp"></i> CONTACT SUPPORT
+      </button>
+      <button class="btn" style="background:none; margin-top:10px; color:#888; font-size:12px; font-weight:700;" onclick="closeForgotPopup()">CLOSE</button>
+    </div>
+  </div>
+
+  <div id="mainDash" class="hidden">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <h3 id="uNameDisplay" style="margin:0; font-size:20px; font-weight:900;">Dashboard</h3>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span id="trialBadge" class="badge-plan">TRIAL: <span id="tLeft">10</span></span>
+        <button onclick="location.reload()" class="btn-danger" style="width:auto; padding:10px 14px; border-radius:14px;"><i class="fa-solid fa-power-off"></i></button>
+      </div>
+    </div>
+
+    <div id="adminPanel" class="hidden">
+        <div class="card" style="border: 4px solid #000; background: #fff;">
+          <h4 style="margin:0 0 20px 0; color:#000; display:flex; align-items:center; gap:10px;"><i class="fa-solid fa-gears"></i> ADMIN CONTROL CENTER</h4>
+          
+          <div style="background:#f9f9fb; padding:15px; border-radius:22px; margin-bottom:15px; border:1.5px solid #000;">
+              <label style="font-size:11px; font-weight:900; display:block; margin-bottom:10px;">USER LIST (BAN/DELETE/RESET)</label>
+              <div style="max-height:180px; overflow-y:auto; background:#fff; border-radius:12px; border:1px solid #ddd;">
+                  <table style="width:100%; font-size:11px; border-collapse:collapse;">
+                      <tbody id="masterUserTable"></tbody>
+                  </table>
+              </div>
+              <button class="btn-secondary" style="margin-top:10px; padding:10px; font-size:11px;" onclick="refreshAdminData()">REFRESH USER LIST</button>
+          </div>
+
+          <div style="background:#f0f7ff; padding:20px; border-radius:22px; margin-bottom:15px; border:1.5px solid #007AFF;">
+              <label style="font-size:11px; font-weight:900; color:#007AFF; display:block; margin-bottom:10px;">VIP USER ACTIVATION</label>
+              <input type="text" id="actMob" placeholder="Target Mobile No." style="width:100%; padding:14px; margin-bottom:10px; border-radius:14px; border:1.5px solid #ccc;">
+              <select id="actPlan" style="width:100%; padding:14px; margin-bottom:12px; border-radius:14px; border:1.5px solid #ccc; font-weight:700;">
+                  <option value="DAILY">DAILY VIP (₹199 - 1 Day)</option>
+                  <option value="WEEKLY">WEEKLY VIP (₹399 - 7 Days)</option>
+                  <option value="15 DAYS">15 DAYS VIP (₹599 - 15 Days)</option>
+                  <option value="MONTHLY">MONTHLY VIP (₹799 - 30 Days)</option>
+              </select>
+              <button class="btn btn-success" style="padding:12px;" onclick="activateVIPUser()">ACTIVATE VIP NOW</button>
+          </div>
+
+          <div style="background:#fff0f0; padding:20px; border-radius:22px; margin-bottom:15px; border:1.5px solid #FF3B30;">
+              <label style="font-size:11px; font-weight:900; color:#FF3B30; display:block; margin-bottom:10px;">USER PASSWORD RECOVERY</label>
+              <input type="text" id="resetMob" placeholder="User Mobile No." style="width:100%; padding:14px; margin-bottom:10px; border-radius:14px; border:1.5px solid #ccc;">
+              <input type="text" id="resetPass" placeholder="Set New Password" style="width:100%; padding:14px; margin-bottom:12px; border-radius:14px; border:1.5px solid #ccc;">
+              <button class="btn btn-danger" style="padding:12px;" onclick="adminResetPassword()">UPDATE USER PASSWORD</button>
+          </div>
+
+          <div class="input-group"><label>Manual Period Update</label><i class="fa-solid fa-clock-rotate-left"></i><input type="text" id="admP" placeholder="Current Period No."></div>
+          <button class="btn btn-primary" style="margin-bottom:15px;" onclick="updateP()">UPDATE GLOBAL PERIOD</button>
+          
+          <div class="input-group"><label>Broadcast News</label><i class="fa-solid fa-bullhorn"></i><input type="text" id="admMsg" placeholder="Message for all users"></div>
+          <button class="btn btn-black" onclick="updateM()">PUBLISH BROADCAST</button>
+        </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:20px;">Signal Analyzer</h3>
+      <div class="input-group"><label>10th Period Digit</label><i class="fa-solid fa-1"></i><input type="number" id="n10" placeholder="e.g. 5"></div>
+      <div class="input-group"><label>20th Period Digit</label><i class="fa-solid fa-2"></i><input type="number" id="n20" placeholder="e.g. 2"></div>
+      <div class="input-group"><label>Current Last Digit</label><i class="fa-solid fa-arrow-down-9-1"></i><input type="number" id="nL" placeholder="e.g. 8"></div>
+      
+      <button id="getBtn" class="btn btn-primary" onclick="handlePrediction()">START AI ANALYSIS</button>
+      
+      <div id="resDisplay" class="hidden" style="text-align:center; padding:25px; background:rgba(0,0,0,0.05); border-radius:25px; margin-top:20px; border:2px solid #fff;">
+        <div id="resSize" style="font-size:38px; font-weight:900; letter-spacing:1px; margin-bottom:10px;">-</div>
+        <div id="resNum" style="font-weight:900; color:#fff; width:55px; height:55px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; background:#000; font-size:24px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">?</div>
+        <div style="display:flex; gap:12px; margin-top:20px;">
+          <button class="btn btn-success" onclick="recordPL('Profit')">WIN ✅</button>
+          <button class="btn btn-danger" onclick="recordPL('Loss')">LOSS ❌</button>
+        </div>
+      </div>
+      <div id="hardLockMsg" class="hidden" style="text-align:center; color:var(--ios-red); font-weight:900; padding:20px; border:2.5px dashed var(--ios-red); border-radius:20px; background:rgba(255,59,48,0.05);">TRIAL LIMIT EXPIRED!<br><span style="font-size:12px;">PLEASE PURCHASE VIP TO CONTINUE.</span></div>
+    </div>
+
+    <div id="userOnlySections">
+        <div class="card">
+          <h3 style="margin-bottom:20px;">Premium Insights</h3>
+          <div class="performance-container">
+            <div class="premium-stat-card">
+              <div class="win-rate-circle">
+                <svg width="85" height="85"><circle class="circle-bg" cx="42" cy="42" r="37"></circle><circle id="progressRing" class="circle-progress" cx="42" cy="42" r="37"></circle></svg>
+                <div class="stat-number" id="winRateNum">0%</div>
+              </div>
+              <div class="trend-label">Accuracy</div>
+            </div>
+            <div class="premium-stat-card">
+              <div style="font-size:36px; font-weight:900; color:var(--accent-blue); margin-top:5px;" id="totalTradesNum">0</div>
+              <div class="trend-label" style="margin-top:15px;">Signals Used</div>
+            </div>
+          </div>
+          <div style="height:150px; width:100%; margin-top:10px;"><canvas id="premiumChart"></canvas></div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+            <h3 style="margin:0;">Recent Activity</h3>
+            <button onclick="clearAllHistory()" style="background:none; border:none; color:var(--ios-red); font-size:10px; font-weight:800; cursor:pointer;">
+              <i class="fa-solid fa-trash-can"></i> CLEAR ALL
+            </button>
+          </div>
+          <div id="historyRows"></div>
+        </div>
+
+        <div class="card">
+          <h3 style="color:var(--accent-blue); margin-bottom:20px;"><i class="fa-solid fa-crown"></i> UPGRADE TO VIP</h3>
+          <div class="plan-row">
+            <div class="plan-info"><h4>VIP DAILY</h4><p>Full Access • 1 Day</p></div>
+            <div style="display:flex; align-items:center;"><span class="price-tag">₹199</span><button class="btn-primary" style="padding:10px 18px; border-radius:14px; font-size:12px; width:auto;" onclick="openOrderForm('VIP DAILY', '₹199')">BUY</button></div>
+          </div>
+          <div class="plan-row">
+            <div class="plan-info"><h4>VIP WEEKLY</h4><p>High Accuracy • 7 Days</p></div>
+            <div style="display:flex; align-items:center;"><span class="price-tag">₹399</span><button class="btn-primary" style="padding:10px 18px; border-radius:14px; font-size:12px; width:auto;" onclick="openOrderForm('VIP WEEKLY', '₹399')">BUY</button></div>
+          </div>
+          <div class="plan-row">
+            <div class="plan-info"><h4>VIP 15 DAYS</h4><p>Professional • 15 Days</p></div>
+            <div style="display:flex; align-items:center;"><span class="price-tag">₹599</span><button class="btn-primary" style="padding:10px 18px; border-radius:14px; font-size:12px; width:auto;" onclick="openOrderForm('VIP 15 DAYS', '₹599')">BUY</button></div>
+          </div>
+          <div class="plan-row" style="border: 2px solid var(--accent-blue); background: rgba(0,122,255,0.02);">
+            <div class="plan-info"><h4>VIP MONTHLY</h4><p>Best Value • 30 Days</p></div>
+            <div style="display:flex; align-items:center;"><span class="price-tag">₹799</span><button class="btn-primary" style="padding:10px 18px; border-radius:14px; font-size:12px; width:auto;" onclick="openOrderForm('VIP MONTHLY', '₹799')">BUY</button></div>
+          </div>
+        </div>
+    </div>
+
+    <div class="footer-support">
+      <button onclick="window.open('https://wa.me/message/6CJSZSPPROGGK1', '_blank')" class="btn btn-success"><i class="fa-brands fa-whatsapp"></i> CONTACT SUPPORT</button>
+      <div class="copyright-text">© 2026 हिNDIE VLOGGER MASTER</div>
+    </div>
+  </div>
+
+  <div id="orderModal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div style="width:60px; height:60px; background:rgba(0,122,255,0.1); border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:var(--accent-blue); font-size:24px; margin-bottom:15px;">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </div>
+        <h3 style="margin:0; font-size:22px;">Confirm Order</h3>
+        <p style="font-size:12px; color:#888; margin-top:5px;">Please verify your details</p>
+      </div>
+      <div class="input-group"><label>Customer Name</label><i class="fa-solid fa-user"></i><input type="text" id="ordName" readonly></div>
+      <div class="input-group"><label>Registered Mobile</label><i class="fa-solid fa-phone"></i><input type="text" id="ordMob" readonly></div>
+      <div class="input-group"><label>Selected Package</label><i class="fa-solid fa-crown" style="color:#FFD700;"></i><input type="text" id="ordPlan" readonly style="color:var(--accent-blue); font-weight:900;"></div>
+      <button class="btn btn-success" onclick="confirmOrder()">CONFIRM & REDIRECT</button>
+      <button class="btn" style="background:none; margin-top:8px; color:#FF3B30; font-size:14px;" onclick="closeOrderForm()">CANCEL ORDER</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let curU = null; let role = 'user'; let history = JSON.parse(localStorage.getItem('vH')) || []; let chart;
+
+// --- ADDED: FORGOT PASSWORD FUNCTIONS ---
+function openForgotPopup() { document.getElementById('forgotPopup').style.display = 'flex'; }
+function closeForgotPopup() { document.getElementById('forgotPopup').style.display = 'none'; }
+function redirectToSupport() {
+    let msg = encodeURIComponent("Hello Support, main apna Vector Hack password bhool gaya hoon. Please help me to recover my account.");
+    window.open("https://wa.me/message/6CJSZSPPROGGK1?text=" + msg, "_blank");
+    closeForgotPopup();
+}
+
+// --- MERGED: Admin Control Logic ---
+function refreshAdminData() {
+    let table = document.getElementById('masterUserTable');
+    table.innerHTML = "";
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        if (key.startsWith("acc_")) {
+            let mob = key.replace("acc_", "");
+            let data = JSON.parse(localStorage.getItem(key));
+            let isBanned = localStorage.getItem(`ban_${mob}`);
+            table.innerHTML += `
+            <tr style="border-bottom:1px solid #eee; background:${isBanned?'#ffebee':'transparent'}">
+                <td style="padding:8px;"><b>${data.n}</b><br>${mob}</td>
+                <td style="padding:8px; text-align:right;">
+                    <button onclick="resetUserTrial('${mob}')" style="background:#007AFF; color:#fff; border:none; border-radius:5px; padding:4px 8px; font-size:9px; margin-bottom:4px;">RESET</button>
+                    <button onclick="toggleBan('${mob}')" style="background:orange; color:#fff; border:none; border-radius:5px; padding:4px 8px; font-size:9px; margin-bottom:4px;">${isBanned?'UNBAN':'BAN'}</button>
+                    <button onclick="deleteUser('${mob}')" style="background:red; color:#fff; border:none; border-radius:5px; padding:4px 8px; font-size:9px;">DEL</button>
+                </td>
+            </tr>`;
+        }
+    }
+}
+function resetUserTrial(m) { localStorage.setItem(`t_${m}`, 0); alert("Trial Reset for " + m); refreshAdminData(); }
+function toggleBan(m) { localStorage.getItem(`ban_${m}`)? localStorage.removeItem(`ban_${m}`) : localStorage.setItem(`ban_${m}`, "true"); refreshAdminData(); }
+function deleteUser(m) { if(confirm("Confirm Delete User?")) { localStorage.removeItem(`acc_${m}`); refreshAdminData(); } }
+
+// --- ORIGINAL FUNCTIONS ---
+function checkAndResetAtMidnight() {
+    const lastResetDate = localStorage.getItem('lastResetDate');
+    const today = new Date().toLocaleDateString();
+    if (lastResetDate !== today) {
+        history = []; 
+        localStorage.setItem('vH', JSON.stringify(history));
+        localStorage.setItem('lastResetDate', today);
+        if(curU && role === 'user') { renderHistory(); updateAnalytics(); }
+    }
+}
+function clearAllHistory() {
+    if(confirm("Saari history delete karein?")) {
+        history = []; localStorage.setItem('vH', JSON.stringify(history));
+        renderHistory(); updateAnalytics();
+    }
+}
+
+function switchTab(t) {
+    document.getElementById('uTab').style.background = t==='user'?'#fff':'transparent';
+    document.getElementById('uTab').style.color = t==='user'?'#1D1D1F':'#888';
+    document.getElementById('aTab').style.background = t==='admin'?'#fff':'transparent';
+    document.getElementById('aTab').style.color = t==='admin'?'#1D1D1F':'#888';
+    document.getElementById('loginFields').classList.toggle('hidden', t==='admin');
+    document.getElementById('adminFields').classList.toggle('hidden', t==='user');
+    document.getElementById('signupFields').classList.add('hidden');
+}
+
+function login(r) {
+    if(r==='admin') {
+        if(document.getElementById('aID').value==='Mayank' && document.getElementById('aPass').value==='Mayank@2025') {
+            role='admin'; curU='admin'; document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainDash').classList.remove('hidden'); document.getElementById('adminPanel').classList.remove('hidden');
+            document.getElementById('userOnlySections').classList.add('hidden'); document.getElementById('trialBadge').classList.add('hidden');
+            refreshAdminData();
+        } else alert("❌ Admin Authentication Failed!");
+    } else {
+        let m=document.getElementById('uID').value, p=document.getElementById('uPass').value;
+        if(localStorage.getItem(`ban_${m}`)) return alert("🚫 Account Banned!");
+        let d=JSON.parse(localStorage.getItem(`acc_${m}`));
+        if(d && d.p===p) {
+            role='user'; curU=m; document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainDash').classList.remove('hidden');
+            document.getElementById('uNameDisplay').innerText = "Namaste, " + d.n;
+            checkAndResetAtMidnight();
+            updateStatus(); initChart(); renderHistory(); updateAnalytics();
+        } else alert("❌ Invalid Mobile or Password!");
+    }
+}
+
+function openOrderForm(plan, price) {
+    let d = JSON.parse(localStorage.getItem(`acc_${curU}`));
+    document.getElementById('ordName').value = d.n; document.getElementById('ordMob').value = curU;
+    document.getElementById('ordPlan').value = plan + " (" + price + ")";
+    document.getElementById('orderModal').style.display = 'flex';
+}
+function closeOrderForm() { document.getElementById('orderModal').style.display = 'none'; }
+function confirmOrder() {
+    let msg = `*🚀 NEW VIP ORDER*%0A*👤 Name:* ${document.getElementById('ordName').value}%0A*📱 Mobile:* ${document.getElementById('ordMob').value}%0A*💎 Plan:* ${document.getElementById('ordPlan').value}`;
+    window.open(`https://wa.me/message/6CJSZSPPROGGK1?text=${msg}`, '_blank');
+}
+
+function activateVIPUser() {
+    let m=document.getElementById('actMob').value, p=document.getElementById('actPlan').value;
+    if(!m) return alert("Enter Mobile Number!");
+    let dur = p==='DAILY'?86400000 : p==='WEEKLY'?604800000 : p==='15 DAYS'?1296000000 : 2592000000;
+    localStorage.setItem(`vip_${m}`, p); localStorage.setItem(`vip_expiry_${m}`, new Date().getTime()+dur);
+    alert("✅ VIP Plan Activated for " + m);
+}
+
+function adminResetPassword() {
+    let m=document.getElementById('resetMob').value, np=document.getElementById('resetPass').value;
+    let d=JSON.parse(localStorage.getItem(`acc_${m}`));
+    if(d){ d.p=np; localStorage.setItem(`acc_${m}`, JSON.stringify(d)); alert("✅ Password Changed!"); }
+    else alert("❌ User Not Found!");
+}
+
+function updateStatus() {
+    let vip = localStorage.getItem(`vip_${curU}`), exp = localStorage.getItem(`vip_expiry_${curU}`), now = new Date().getTime();
+    if(vip && exp && now < parseInt(exp)) {
+        let diff = parseInt(exp)-now;
+        let d = Math.floor(diff/86400000), h = Math.floor((diff%86400000)/3600000);
+        document.getElementById('trialBadge').innerText = "VIP: "+vip+" ("+(d>0?d+"d ":"")+h+"h left)";
+        document.getElementById('trialBadge').style.background="#34C759";
+        document.getElementById('getBtn').classList.remove('hidden'); document.getElementById('hardLockMsg').classList.add('hidden');
+    } else {
+        let t = parseInt(localStorage.getItem(`t_${curU}`)) || 0;
+        document.getElementById('tLeft').innerText = 10-t;
+        if(t>=10) { document.getElementById('getBtn').classList.add('hidden'); document.getElementById('hardLockMsg').classList.remove('hidden'); document.getElementById('trialBadge').innerText="LIMIT EXPIRED"; document.getElementById('trialBadge').style.background="#FF3B30"; }
+    }
+}
+
+function handlePrediction() {
+    let a=document.getElementById('n10').value, b=document.getElementById('n20').value, c=document.getElementById('nL').value;
+    if(!a||!b||!c) return alert("Fill all fields!");
+    let exp = localStorage.getItem(`vip_expiry_${curU}`), now = new Date().getTime();
+    if(role==='admin' || (exp && now < parseInt(exp))) { runFormula(a,b,c); }
+    else {
+        let t = parseInt(localStorage.getItem(`t_${curU}`)) || 0;
+        if(t<10) { t++; localStorage.setItem(`t_${curU}`, t); updateStatus(); runFormula(a,b,c); }
+        else alert("Buy VIP!");
+    }
+}
+
+function runFormula(a,b,c) {
+    let res = Math.abs((parseInt(a)+parseInt(b))-parseInt(c))%10;
+    document.getElementById('resSize').innerText = res>=5?"BIG":"SMALL";
+    document.getElementById('resSize').style.color = res>=5?"#007AFF":"#FF3B30";
+    document.getElementById('resNum').innerText = res;
+    document.getElementById('resNum').style.background = res%2===0?"#FF3B30":"#34C759";
+    document.getElementById('resDisplay').classList.remove('hidden');
+}
+
+function recordPL(type) {
+    history.push({p: localStorage.getItem('vP')||'?', s: document.getElementById('resSize').innerText, type: type});
+    if(history.length > 10) history = history.slice(-10);
+    localStorage.setItem('vH', JSON.stringify(history));
+    renderHistory(); updateAnalytics(); document.getElementById('resDisplay').classList.add('hidden');
+}
+
+function renderHistory() {
+    document.getElementById('historyRows').innerHTML = history.slice().reverse().map(h => `
+        <div class="history-item">
+            <div style="display:flex; flex-direction:column;"><span style="font-weight:900; font-size:14px;">#${h.p}</span><span style="font-size:10px; color:#8E8E93;">Verified Result</span></div>
+            <span class="res-tag" style="background:${h.s==='BIG'?'#f0f7ff':'#fff0f0'}; color:${h.s==='BIG'?'#007AFF':'#FF3B30'}">${h.s}</span>
+            <div style="font-size:20px;">${h.type==='Profit'?'✅':'❌'}</div>
+        </div>`).join('');
+}
+
+function updateAnalytics() {
+    const total = history.length, wins = history.filter(h=>h.type==='Profit').length;
+    const rate = total===0?0:Math.round((wins/total)*100);
+    document.getElementById('totalTradesNum').innerText = total;
+    document.getElementById('winRateNum').innerText = rate+"%";
+    document.getElementById('progressRing').style.strokeDashoffset = 226 - (226*rate/100);
+    if(chart) {
+        chart.data.labels = history.slice(-10).map((_,i)=>i+1);
+        chart.data.datasets[0].data = history.slice(-10).map(h=>h.type==='Profit'?1:0);
+        chart.update();
+    }
+}
+
+function initChart() {
+    chart = new Chart(document.getElementById('premiumChart'), {
+        type: 'line',
+        data: { labels: [], datasets: [{ data: [], borderColor: '#007AFF', borderWidth: 3, pointRadius: 0, fill: true, backgroundColor: 'rgba(0,122,255,0.05)', tension: 0.4 }] },
+        options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{display:false}, y:{display:false, min:-0.1, max:1.1}} }
+    });
+}
+
+function createAccount() {
+    let n=document.getElementById('newName').value, m=document.getElementById('newMob').value, p=document.getElementById('newPass').value;
+    if(n&&m&&p){ localStorage.setItem(`acc_${m}`, JSON.stringify({n,p})); alert("✅ Account Created!"); toggleSignup(false); }
+}
+function toggleSignup(s) { document.getElementById('loginFields').classList.toggle('hidden', s); document.getElementById('signupFields').classList.toggle('hidden', !s); }
+function updateP() { localStorage.setItem('vP', document.getElementById('admP').value); alert("✅ Period Updated!"); }
+function updateM() { localStorage.setItem('vM', document.getElementById('admMsg').value); alert("✅ Broadcast Sent!"); location.reload(); }
+
+window.onload = () => { 
+    checkAndResetAtMidnight();
+    let m = localStorage.getItem('vM'); 
+    if(m){ document.getElementById('msgContent').innerText=m; document.getElementById('globalMsgBox').classList.remove('hidden'); } 
+}
+</script>
+</body>
+</html>
